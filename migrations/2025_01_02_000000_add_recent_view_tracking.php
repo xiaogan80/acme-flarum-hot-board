@@ -19,8 +19,17 @@ return [
     'up' => function (Builder $schema) {
         if (! $schema->hasColumn('discussions', 'view_count_recent')) {
             $schema->table('discussions', function (Blueprint $table) {
+                /*
+                 * 不在这里建索引。
+                 * 「加列 + 同一个闭包里加索引」在 MySQL 上会拆成两条 ALTER，
+                 * 只要索引那一步因为重名/权限失败，整个迁移就中断，
+                 * 而列其实已经加上了，重跑时 hasColumn 为真、索引永远补不上。
+                 * 这一列只在「热门浏览」排序时用到，数据量不大时没有索引也能跑，
+                 * 需要时手动建：
+                 *   CREATE INDEX discussions_view_count_recent_index
+                 *     ON discussions (view_count_recent);
+                 */
                 $table->unsignedInteger('view_count_recent')->default(0);
-                $table->index('view_count_recent');
             });
         }
 

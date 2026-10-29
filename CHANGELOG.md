@@ -6,6 +6,17 @@
 > `acme` 在 Packagist 上已被他人占用，`yingweigan` 是已废弃的 GitHub 用户名。
 > 正式发布从 `xiaogan80/flarum-hot-board` v1.2.0 开始，**v1.2.0 是第一个可用版本**。
 
+## v1.2.2
+
+修复真实环境安装时出现「数据库查询失败」的问题：
+
+- `view_count` 迁移改为 `hasColumn` 保护。站上若已有别的浏览量扩展占用了该列，
+  直接 ADD 会抛 `Duplicate column name`，而 Flarum 只显示笼统的 DB 错误页
+- 移除 `view_count_recent` 上自动创建的索引。在 MySQL 上「加列 + 同闭包加索引」
+  会拆成两条 ALTER，索引那步一失败整个迁移中断，而列已加上，
+  重跑时 `hasColumn` 为真、索引永远补不上。数据量大时可手动建
+- README 新增「数据库查询失败」排错章节：怎么拿真实 SQL 错误、常见原因对照表
+
 ## v1.2.1
 
 - 文档：安装说明改为 Packagist 直装（`composer require xiaogan80/flarum-hot-board`）

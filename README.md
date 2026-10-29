@@ -112,11 +112,49 @@ php flarum xiaogan80-hot-board:recount   # 手动跑一次确认可用
 | 迁移 | 作用 |
 |---|---|
 | `add_view_count_to_discussions` | `discussions.view_count`（全站累计） |
-| `add_recent_view_tracking` | `discussions.view_count_recent`（近 7 天）+ `acme_hot_board_view_days` 明细表 |
+| `add_recent_view_tracking` | `discussions.view_count_recent`（近 7 天）+ `xiaogan80_hot_board_view_days` 明细表 |
 
 每次讨论页被访问会写入 3 次：两个计数各 +1，以及当天明细 +1。
 
 > SQLite 在高并发下有写锁瓶颈；流量较大建议使用 MySQL。
+> `view_count_recent` 默认不建索引，数据量大时可手动加：
+> `CREATE INDEX discussions_view_count_recent_index ON discussions (view_count_recent);`
+
+## 排错：「数据库查询失败」
+
+看到这个页面：
+
+> 数据库查询失败。某个扩展程序可能与当前使用的数据库驱动不兼容。
+
+**这是 Flarum 的兜底错误页，任何 SQL 异常都会显示它，真实错误被隐藏了**（源码里 `QueryExceptionHandler` 一律返回 `db_error`）。要看真正的 SQL 报错，任选一种：
+
+```bash
+# 方式一：命令行跑迁移，SQL 错误会直接打印
+php flarum migrate -v
+
+# 方式二：临时开启调试，刷新页面看堆栈
+#   config.php 里 'debug' => false 改成 true，看完记得改回来
+
+# 方式三：查日志
+tail -n 50 storage/logs/flarum-*.log
+```
+
+常见原因：
+
+| 报错关键字 | 原因 | 处理 |
+|---|---|---|
+| `Duplicate column name 'view_count'` | 站上已有别的浏览量扩展占用了该列 | v1.2.2 起自动跳过，不再报错 |
+| `Unknown column 'view_count_recent'` | 扩展已启用但迁移没跑完 | `php flarum migrate -v` 重跑 |
+| `Base table or view already exists` | 上次迁移中途失败留下残表 | `DROP TABLE xiaogan80_hot_board_view_days;` 后重跑 |
+| `Specified key was too long` | 老版本 MySQL 的索引长度限制 | 已移除该索引，不会再出现 |
+
+**v1.2.2 的恢复步骤**：
+
+```bash
+composer update xiaogan80/flarum-hot-board
+php flarum migrate -v
+php flarum cache:clear
+```
 
 ## 卸载
 
