@@ -37,7 +37,7 @@
 在你的 Flarum 根目录，先告诉 Composer 去哪里找（本包未发布到 Packagist）：
 
 ```bash
-composer config repositories.yingweigan-hot-board vcs https://github.com/yingweigan/acme-flarum-hot-board.git
+composer config repositories.yingweigan-hot-board vcs https://github.com/xiaogan80/acme-flarum-hot-board.git
 ```
 
 然后安装：
@@ -59,7 +59,7 @@ php flarum cache:clear
 > ```json
 > {
 >     "repositories": [
->         { "type": "vcs", "url": "https://github.com/yingweigan/acme-flarum-hot-board.git" }
+>         { "type": "vcs", "url": "https://github.com/xiaogan80/acme-flarum-hot-board.git" }
 >     ]
 > }
 > ```
