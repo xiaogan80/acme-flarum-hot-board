@@ -152,7 +152,7 @@ export default class HotBoardCoverColumn extends Component {
                 <button
                   type="button"
                   className={'HotBoard-dot' + (i === this.index ? ' is-active' : '')}
-                  aria-label={app.translator.trans('yingweigan-hot-board.forum.slide_n', {
+                  aria-label={app.translator.trans('xiaogan80-hot-board.forum.slide_n', {
                     current: i + 1,
                     total: items.length,
                   })}

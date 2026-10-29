@@ -1,6 +1,6 @@
 <?php
 
-namespace Yingweigan\HotBoard;
+namespace Xiaogan80\HotBoard;
 
 use Illuminate\Database\ConnectionInterface;
 
@@ -11,7 +11,7 @@ use Illuminate\Database\ConnectionInterface;
  * 那是全站累计，只增不减，没法表达「最近 7 天」这种滑动窗口。
  *
  * 方案：
- *  1. 每次访问 +1 到按天聚合表 yingweigan_hot_board_view_days（按天一行，增量很小）
+ *  1. 每次访问 +1 到按天聚合表 xiaogan80_hot_board_view_days（按天一行，增量很小）
  *  2. 同时 +1 到 discussions.view_count_recent（物化列，保证实时排序）
  *  3. 定时任务用「窗口内按天求和」覆盖物化列，纠正漂移并淘汰过期数据
  *
@@ -23,7 +23,7 @@ class RecentViews
     /** 统计窗口：含今天在内共 7 天 */
     public const WINDOW_DAYS = 7;
 
-    public const TABLE = 'yingweigan_hot_board_view_days';
+    public const TABLE = 'xiaogan80_hot_board_view_days';
 
     /** 窗口起点，格式 Y-m-d */
     public static function cutoff(): string
