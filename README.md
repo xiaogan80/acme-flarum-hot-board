@@ -34,23 +34,35 @@
 
 ### 方式一：Composer（推荐）
 
-在你的 Flarum 根目录：
+在你的 Flarum 根目录，先告诉 Composer 去哪里找（本包未发布到 Packagist）：
 
 ```bash
-composer config repositories.acme-hot-board vcs https://github.com/你的用户名/acme-flarum-hot-board.git
+composer config repositories.acme-hot-board vcs https://github.com/yingweigan/acme-flarum-hot-board.git
+```
+
+然后安装：
+
+```bash
 composer require acme/flarum-hot-board
 ```
 
-> 把 URL 换成你实际的仓库地址。因为这个包没有发布到 Packagist，
-> 所以必须先加一条 `repositories`，Composer 才知道去哪里找。
-
-然后启用：
+启用：
 
 ```bash
 php flarum extension:enable acme-hot-board
 php flarum migrate
 php flarum cache:clear
 ```
+
+> 也可以直接用 `composer.json` 手写，效果一样：
+>
+> ```json
+> {
+>     "repositories": [
+>         { "type": "vcs", "url": "https://github.com/yingweigan/acme-flarum-hot-board.git" }
+>     ]
+> }
+> ```
 
 ### 方式二：手动放入
 
