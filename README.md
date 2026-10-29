@@ -34,19 +34,13 @@
 
 ### 方式一：Composer（推荐）
 
-在你的 Flarum 根目录，先告诉 Composer 去哪里找（本包未发布到 Packagist）：
-
-```bash
-composer config repositories.xiaogan80-hot-board vcs https://github.com/xiaogan80/acme-flarum-hot-board.git
-```
-
-然后安装：
+已发布到 Packagist，**不需要任何额外配置**。在 Flarum 根目录：
 
 ```bash
 composer require xiaogan80/flarum-hot-board
 ```
 
-启用：
+然后启用：
 
 ```bash
 php flarum extension:enable xiaogan80-hot-board
@@ -54,19 +48,15 @@ php flarum migrate
 php flarum cache:clear
 ```
 
-> 也可以直接用 `composer.json` 手写，效果一样：
+> 如果 Composer 提示版本过低，或你想跟随默认分支开发：
 >
-> ```json
-> {
->     "repositories": [
->         { "type": "vcs", "url": "https://github.com/xiaogan80/acme-flarum-hot-board.git" }
->     ]
-> }
+> ```bash
+> composer require xiaogan80/flarum-hot-board:@dev
 > ```
 
-### 方式二：手动放入
+### 方式二：从源码 / 本地包安装
 
-下载仓库，把目录放到 `packages/xiaogan80-hot-board/`，然后在 `composer.json` 加：
+下载仓库，把目录放到 `packages/` 下，在 `composer.json` 里加 path 仓库：
 
 ```json
 "repositories": [{ "type": "path", "url": "packages/*" }]
@@ -149,6 +139,10 @@ npm run build   # 生产构建，产物在 js/dist/
 **改了 `js/src/` 或 `less/` 之后必须重新构建并提交 `js/dist/`**，否则使用方拿到的是旧前端。
 
 更多内部实现（高度锁定的原理、缓存策略、7 天窗口的存储设计、踩坑记录）见 [DEVELOPMENT.md](DEVELOPMENT.md)。
+
+## 更新日志
+
+见 [CHANGELOG.md](CHANGELOG.md)。
 
 ## 许可证
 
