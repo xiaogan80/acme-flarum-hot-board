@@ -1,0 +1,33 @@
+acme-hot-board:
+  forum:
+    recommended_title: Recommended
+    latest_title: Latest
+    popular_title: Most Viewed
+    image_title: Images
+    loading: Loading the board
+    dismiss: Hide the board (this browser only)
+    sub_author_time: '{username} posted {ago}'
+    replies_count: "{count} replies"
+    no_image: No image
+    slide_n: "Slide {current} of {total}"
+  admin:
+    show_recommended_label: Show "Recommended" section
+    show_recommended_help: Uses pinned (sticky) discussions, topped up with the latest ones. Falls back to latest only when the Sticky extension is disabled.
+    show_latest_label: Show "Latest" section
+    show_latest_help: Ordered by last reply time, newest first.
+    show_popular_label: Show "Most Viewed" section
+    show_popular_help: 'Ordered by views from the last 7 days, not all-time totals. Views are recorded per day whenever a discussion page loads; a daily task recomputes the window and drops expired data.'
+    mode_recommended_label: 'Recommended display style'
+    mode_latest_label: 'Latest display style'
+    mode_popular_label: 'Most Viewed display style'
+    mode_help: 'List = compact thumbnail + title rows. Images = only discussions whose first post contains an image, shown as a full-width carousel titled "Images". Each of the three sections is configured independently.'
+    mode_list: List
+    mode_image: Images
+    count_label: Items per column
+    count_help: 'How many discussions each column shows. Range 5-10. The block height stays fixed: fewer items get roomier rows, more items collapse into a compact style.'
+    featured_label: Manually featured discussions
+    featured_help: 'Discussion IDs separated by commas; the order here is the display order (max 20). Leave empty to fall back to pinned discussions topped up with the latest.'
+    allow_dismiss_label: Let visitors hide the board
+    allow_dismiss_help: 'Shows a close button in the top-right corner. This is a per-browser preference stored in localStorage; it is not saved to the database and does not affect other visitors.'
+    slide_interval_label: Auto-advance interval (seconds)
+    slide_interval_help: Applies to Images mode only. Range 2-30 seconds. Auto-advance pauses while the pointer is over the section.

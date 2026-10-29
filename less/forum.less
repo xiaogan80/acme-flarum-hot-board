@@ -1,0 +1,598 @@
+/* ==========================================================================
+   Hot Board — 讨论列表上方的推荐 / 最新 / 热门浏览看板
+   --------------------------------------------------------------------------
+   视觉参考：整体一块浅灰平面板，竖向细线分栏，区块标题带粗下划线，
+   行与行之间用极细线分隔，圆形容器 + 大留白。无阴影、无卡片边框。
+
+   刻意不引用 Flarum 的 Less 变量：不同版本变量名有变动，引用不存在的变量
+   会让 lessc 直接编译失败。这里用局部 CSS 自定义属性 + [data-theme="dark"]
+   覆盖，从而兼容深浅色。
+   ========================================================================== */
+
+/*
+ * 外层容器：必须给上下留白，否则会紧贴顶部 hero。
+ * 用 padding 而不是 margin —— Flarum 的 .container 有自己的 margin 规则，
+ * 用 margin-top 可能被覆盖。
+ */
+.HotBoard-wrap {
+  padding-top: 20px;
+  padding-bottom: 22px;
+}
+
+.HotBoard {
+  --hb-panel: #f7f8f9;
+  --hb-line: #e3e6e9;
+  --hb-row-line: #e8eaec;
+  --hb-headline: #ccd3d9;
+  --hb-text: #24292f;
+  --hb-title: #24292f;
+  --hb-muted: #8b939b;
+  --hb-hover: rgba(0, 0, 0, 0.022);
+  --hb-thumb: #eceef0;
+  --hb-dot: #c6ccd2;
+  --hb-accent: #e07b4a;
+  --hb-radius: var(--border-radius, 4px);
+  --hb-skel-base: #e9ebee;
+  --hb-skel-hi: #f4f5f7;
+
+  /*
+   * 高度锁定：
+   *   --hb-gap-top  标题线到内容的统一上间距（图片和列表必须一致，
+   *                 否则列表首行会比图片上边缘高出一截）
+   *   --hb-list-h   列表区固定高度，条数变化时行高在此区间内均分。
+   *                 列表总占用 = gap-top + list-h，图片列用 flex: 1 吃掉
+   *                 「分栏高度 − 表头 − gap-top」，因此两者上下边缘都严格对齐。
+   */
+  --hb-gap-top: 16px;
+  --hb-list-h: 306px;
+
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  background: var(--hb-panel);
+  border-radius: var(--hb-radius);
+  overflow: hidden;
+  /* 关闭按钮用绝对定位叠在面板右上角，不占网格单元 */
+  position: relative;
+}
+
+/* ---------- 关闭按钮（访客本地偏好） ---------- */
+
+.HotBoard-dismiss {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 3;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: none;
+  border-radius: var(--hb-radius);
+  background: transparent;
+  color: var(--hb-muted);
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: opacity 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+.HotBoard-dismiss:hover,
+.HotBoard-dismiss:focus-visible {
+  opacity: 1;
+  background: var(--hb-hover);
+  color: var(--hb-text);
+}
+
+[data-theme="dark"] .HotBoard {
+  --hb-panel: #1f2022;
+  --hb-line: #313336;
+  --hb-row-line: #2b2d30;
+  --hb-headline: #3a3d41;
+  --hb-text: #e8eaed;
+  --hb-title: #e8eaed;
+  --hb-muted: #8b939b;
+  --hb-hover: rgba(255, 255, 255, 0.035);
+  --hb-thumb: #2c2e31;
+  --hb-dot: #3c3f43;
+  --hb-accent: #e08a5e;
+  --hb-skel-base: #2b2d30;
+  --hb-skel-hi: #35383b;
+}
+
+/* ---------- 骨架屏（首次加载） ---------- */
+
+/*
+ * 骨架屏用的是和真实看板一模一样的容器类（HotBoard-column / HotBoard-heading /
+ * HotBoard-list / HotBoard-item）和同样的行数，所以高度完全一致，
+ * 数据回来时不会出现「加载完跳一下」。
+ */
+.HotBoard-skelThumb,
+.HotBoard-skelCover,
+.HotBoard-skelLine {
+  background-color: var(--hb-skel-base);
+  background-image: linear-gradient(
+    90deg,
+    var(--hb-skel-base) 25%,
+    var(--hb-skel-hi) 37%,
+    var(--hb-skel-base) 63%
+  );
+  background-size: 400% 100%;
+  animation: hbShimmer 1.4s ease infinite;
+}
+
+.HotBoard-skelThumb {
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.HotBoard--dense .HotBoard-skelThumb {
+  flex-basis: 24px;
+  width: 24px;
+  height: 24px;
+}
+
+.HotBoard-skelLine {
+  display: block;
+  height: 10px;
+  border-radius: var(--hb-radius);
+}
+
+.HotBoard-skelTitle {
+  width: 62%;
+}
+
+.HotBoard-skelMeta {
+  flex: 0 0 auto;
+  width: 34px;
+}
+
+/* 图片位：和真实图片一样用 flex: 1 撑满，保证高度一致 */
+.HotBoard-skelCover {
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 160px;
+  margin-top: var(--hb-gap-top);
+  border-radius: var(--hb-radius);
+}
+
+@keyframes hbShimmer {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0 50%;
+  }
+}
+
+/* ---------- 分栏 ---------- */
+
+.HotBoard-column {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  /* 底部内边距决定「图片/最后一行」到底板边缘的距离，与左右 20px 接近才不显局促 */
+  padding: 16px 20px 18px;
+}
+
+.HotBoard-column + .HotBoard-column {
+  border-left: 1px solid var(--hb-line);
+}
+
+/* ---------- 区块标题（带粗下划线） ---------- */
+
+.HotBoard-heading {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex: 0 0 auto;
+  margin: 0 0 2px;
+  padding-bottom: 11px;
+  border-bottom: 2px solid var(--hb-headline);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+  color: var(--hb-title);
+}
+
+.HotBoard-headingIcon {
+  flex: 0 0 auto;
+  font-size: 11px;
+  color: var(--hb-accent);
+}
+
+.HotBoard-headingText {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* ---------- 列表模式 ---------- */
+
+.HotBoard-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  /* 与图片共用同一个上间距，首行才不会比图片上边缘高 */
+  margin-top: var(--hb-gap-top);
+  /* 固定高度：条数从 5 到 10 变化时，行高在固定区间内均分，区块总高不变 */
+  height: var(--hb-list-h);
+  flex: 0 0 auto;
+}
+
+.HotBoard-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  padding: 6px 10px;
+  margin: 0 -10px;
+  border-bottom: 1px solid var(--hb-row-line);
+  /* 均分列表区高度：条数少时行高舒展，条数多时自动压缩 */
+  flex: 1 1 0;
+  transition: background-color 0.15s ease;
+}
+
+.HotBoard-item:last-child {
+  border-bottom: none;
+}
+
+.HotBoard-item:hover {
+  background: var(--hb-hover);
+}
+
+/* 圆形缩略位：有图放图，无图放头像（Avatar 自带首字母 + 组颜色） */
+.HotBoard-thumb {
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--hb-thumb);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.HotBoard-thumbImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.HotBoard-thumbAvatar {
+  width: 40px;
+  height: 40px;
+  font-size: 16px;
+  line-height: 40px;
+}
+
+.HotBoard-thumbFallback {
+  font-size: 14px;
+  color: var(--hb-muted);
+}
+
+.HotBoard-content {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* 标题单行省略，避免长标题把行的右对齐撑坏 */
+.HotBoard-link {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--hb-text);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.HotBoard-link:hover {
+  color: var(--hb-accent);
+}
+
+.HotBoard-meta {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--hb-muted);
+  white-space: nowrap;
+}
+
+.HotBoard-meta i {
+  font-size: 11px;
+}
+
+/*
+ * 副标题「作者 发布于 时间」。
+ * 默认隐藏，只在 .HotBoard--stacked（条数 5–6，行高宽裕）时显示；
+ * 条数 7–10 走密集单行模式。
+ */
+.HotBoard-sub {
+  display: none;
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 11.5px;
+  line-height: 1.35;
+  color: var(--hb-muted);
+}
+
+/* ---------- 两行布局（条数 5–6） ---------- */
+
+.HotBoard--stacked .HotBoard-item {
+  gap: 12px;
+}
+
+/* 标题在上、作者与时间在下 */
+.HotBoard--stacked .HotBoard-content {
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 2px;
+}
+
+.HotBoard--stacked .HotBoard-link {
+  flex: 0 0 auto;
+  width: 100%;
+}
+
+.HotBoard--stacked .HotBoard-sub {
+  display: block;
+}
+
+/* ---------- 简易样式（条数 ≥ 7，行高已被压缩） ---------- */
+
+/*
+ * 行高被均分压缩到 46px 以下时，40px 的圆形容器放不下，
+ * 所以整体收紧：缩略图 24px、字号略小、上下内边距归零。
+ */
+.HotBoard--dense .HotBoard-item {
+  gap: 10px;
+  padding: 0 10px;
+}
+
+.HotBoard--dense .HotBoard-thumb {
+  flex-basis: 24px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+}
+
+.HotBoard--dense .HotBoard-thumbAvatar {
+  width: 24px;
+  height: 24px;
+  font-size: 11px;
+  line-height: 24px;
+}
+
+.HotBoard--dense .HotBoard-thumbFallback {
+  font-size: 10px;
+}
+
+.HotBoard--dense .HotBoard-link {
+  font-size: 12.5px;
+  line-height: 1.3;
+}
+
+.HotBoard--dense .HotBoard-meta {
+  font-size: 11px;
+}
+
+/* ---------- 图片模式（标题叠在图片内） ---------- */
+
+/*
+ * 图片高度 = 分栏剩余高度（flex: 1）。
+ * 因为分栏内容高度由同排列表决定（固定 --hb-list-h），
+ * 所以图片底边会与列表最后一个条目的底边严格对齐，区块总高依旧恒定。
+ * 标题 / meta / 指示点全部绝对定位叠在图片内，不再占用垂直空间。
+ */
+.HotBoard-coverFrame {
+  position: relative;
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 160px;
+  /* 与列表共用同一个上间距 */
+  margin-top: var(--hb-gap-top);
+  border-radius: var(--hb-radius);
+  overflow: hidden;
+  background: var(--hb-thumb);
+}
+
+/* 可点击层铺满整块图片 */
+.HotBoard-coverLink {
+  position: absolute;
+  inset: 0;
+  display: block;
+  text-decoration: none;
+}
+
+.HotBoard-coverImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  animation: hbCoverFade 0.45s ease both;
+  transition: transform 0.5s ease;
+}
+
+.HotBoard-coverFrame:hover .HotBoard-coverImage {
+  transform: scale(1.03);
+}
+
+@keyframes hbCoverFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/*
+ * 底部渐变蒙版：不管底下是亮图还是暗图，标题都能读清。
+ * 分四段是为了过渡自然，避免出现一条硬边。
+ */
+.HotBoard-coverScrim {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 62%;
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    rgba(12, 14, 16, 0.82) 0%,
+    rgba(12, 14, 16, 0.55) 38%,
+    rgba(12, 14, 16, 0.18) 70%,
+    rgba(12, 14, 16, 0) 100%
+  );
+}
+
+/* 标题与 meta 固定在图片最下边 */
+.HotBoard-coverCaption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: block;
+  /* 底部留多一点，标题不贴图片下边缘 */
+  padding: 12px 13px 16px;
+  pointer-events: none;
+}
+
+.HotBoard-coverTitle {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.45;
+  color: #ffffff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+}
+
+.HotBoard-coverMeta {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 4px;
+  font-size: 11.5px;
+  color: rgba(255, 255, 255, 0.82);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.HotBoard-coverMeta i {
+  font-size: 10px;
+}
+
+/* 图片缺失时的回退：作者头像 / 占位图标，居中 */
+.HotBoard-coverFallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: var(--hb-muted);
+}
+
+.HotBoard-coverAvatar {
+  width: 64px;
+  height: 64px;
+  font-size: 26px;
+  line-height: 64px;
+}
+
+/* 指示点：叠在图片右上角，白点 + 描边保证明暗图上都可见 */
+.HotBoard-dots {
+  position: absolute;
+  top: 9px;
+  right: 10px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.HotBoard-dot {
+  width: 5px;
+  height: 5px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.22);
+  cursor: pointer;
+  transition: width 0.2s ease, background-color 0.2s ease;
+}
+
+.HotBoard-dot:hover {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.HotBoard-dot.is-active {
+  width: 14px;
+  background: #ffffff;
+}
+
+/* ---------- 小屏：单栏堆叠，竖线换成横线 ---------- */
+
+@media (max-width: 767px) {
+  .HotBoard {
+    grid-template-columns: 1fr;
+  }
+
+  .HotBoard-column {
+    padding: 14px 16px 14px;
+  }
+
+  .HotBoard-column + .HotBoard-column {
+    border-left: none;
+    border-top: 1px solid var(--hb-line);
+  }
+
+  /* 单栏堆叠时不再靠列对齐，列表恢复自然行高 */
+  .HotBoard-list {
+    height: auto;
+    flex: 0 0 auto;
+  }
+
+  .HotBoard-item {
+    flex: 0 0 auto;
+    min-height: 46px;
+  }
+
+  .HotBoard-coverFrame {
+    flex: 0 0 auto;
+    height: 200px;
+  }
+}
+
+/* ---------- 打印时不渲染 ---------- */
+
+@media print {
+  .HotBoard-wrap {
+    display: none;
+  }
+}

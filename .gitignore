@@ -1,0 +1,18 @@
+# 依赖
+node_modules/
+/vendor/
+
+# 构建产物：js/dist 必须提交（生产环境不装 Node，靠它运行）
+# 所以这里刻意不忽略 js/dist
+
+# 本地环境
+.env
+composer.phar
+.DS_Store
+__pycache__/
+*.pyc
+
+# 编辑器
+.idea/
+.vscode/
+*.log

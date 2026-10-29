@@ -1,0 +1,33 @@
+acme-hot-board:
+  forum:
+    recommended_title: 推荐帖子
+    latest_title: 最新帖子
+    popular_title: 热门浏览
+    image_title: 图片帖子
+    loading: 正在加载热点看板
+    dismiss: 关闭热点看板（仅对当前浏览器生效）
+    sub_author_time: '{username} 发布于 {ago}'
+    replies_count: "{count} 回复"
+    no_image: 暂无配图
+    slide_n: 第 {current} / {total} 张
+  admin:
+    show_recommended_label: 显示「推荐帖子」区块
+    show_recommended_help: 取置顶（Sticky）的讨论，不足时用最新讨论补足。站点未启用 Sticky 扩展时自动降级为最新讨论。
+    show_latest_label: 显示「最新帖子」区块
+    show_latest_help: 按最后回复时间倒序。
+    show_popular_label: 显示「热门浏览」区块
+    show_popular_help: 按**近 7 天**浏览量倒序（不是全站累计）。浏览量由本扩展在讨论页被访问时按天记录，每天定时重算窗口，过期数据自动淘汰。
+    mode_recommended_label: 「推荐帖子」展示方式
+    mode_latest_label: 「最新帖子」展示方式
+    mode_popular_label: 「热门浏览」展示方式
+    mode_help: 列表 = 缩略图 + 标题的紧凑列表。图片帖子 = 只保留首帖含图片的讨论，图片占满区块并自动轮播，标题显示为「图片帖子」。三个区块可以各自独立设置。
+    mode_list: 列表
+    mode_image: 图片帖子
+    count_label: 每列显示数量
+    count_help: 每一列最多显示几条讨论，取值 5–10。区块高度固定不变：条数少时行高较舒展，条数多时行会自动压缩为简易样式。
+    featured_label: 手动指定「推荐帖子」列表
+    featured_help: 填写讨论 ID，用英文逗号分隔，排列顺序即展示顺序（最多 20 个）。留空则退回「置顶优先 + 最新补足」。不足设定数量时会用置顶和最新自动补齐。
+    allow_dismiss_label: 允许访客关闭看板
+    allow_dismiss_help: 开启后看板右上角出现关闭按钮，访客可以隐藏看板。这是**本机偏好**，存在浏览器 localStorage 里，不影响其他访客，也不写数据库。
+    slide_interval_label: 图片自动切换间隔（秒）
+    slide_interval_help: 仅对「图片帖子」模式生效，取值 2–30 秒。鼠标悬停时暂停切换。
