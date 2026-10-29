@@ -6,6 +6,18 @@
 > `acme` 在 Packagist 上已被他人占用，`yingweigan` 是已废弃的 GitHub 用户名。
 > 正式发布从 `xiaogan80/flarum-hot-board` v1.2.0 开始，**v1.2.0 是第一个可用版本**。
 
+## v1.3.0
+
+**修复与 `fof/discussion-views` 的列冲突**（真实环境安装失败的根因）。
+
+- 删除 `add_view_count_to_discussions` 迁移：不再创建 `discussions.view_count`。
+  该列由 `fof/discussion-views` 拥有，重复创建会抛 `Duplicate column name 'view_count'`，
+  Flarum 只会显示笼统的「数据库查询失败」页面
+- `viewCount` 字段改为**只读**：有 `view_count` 列就返回它的值，没有则返回 0
+- 不再自增 `view_count`，避免与 `fof/discussion-views` 重复计数
+- 移除 `viewCount` 排序（按一个可能不存在的列 ORDER BY 会直接 SQL 报错）
+- 本扩展只维护自己独有的 `view_count_recent` 与按天明细表
+
 ## v1.2.2
 
 修复真实环境安装时出现「数据库查询失败」的问题：

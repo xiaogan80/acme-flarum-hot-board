@@ -62,17 +62,26 @@ return [
 
     /*
      * 扩展 Discussion 资源：
-     *  - viewCount     全站累计（保留，用于展示）
-     *  - viewCountRecent   近 7 天（物化列，「热门浏览」按它排序）
-     *  - show 端点序列化前给两个计数 +1，并按天记一条明细
+     *  - viewCount       全站累计（**只读**，见下方说明）
+     *  - viewCountRecent 近 7 天（本扩展自己的物化列，「热门浏览」按它排序）
+     *  - show 端点序列化前给近 7 天计数 +1，并按天记一条明细
+     *
+     * 关于 viewCount：
+     * 这一列不由本扩展创建。fof/discussion-views 已经在 discussions 上加了
+     * view_count 并且自己维护自增；很多论坛都装了它。如果本扩展也去建这一列，
+     * 迁移会抛 "Duplicate column name 'view_count'"，而 Flarum 只会显示
+     * 一个笼统的「数据库查询失败」页面，几乎无法排查。
+     * 所以这里只「读」不「写」：装了 fof/discussion-views 就能显示它的数据，
+     * 没装则返回 0，绝不与它抢同一列。
+     *
+     * 同理不注册 viewCount 的排序 —— 按一个可能不存在的列 ORDER BY 会直接 SQL 报错。
      */
     (new Extend\ApiResource(Resource\DiscussionResource::class))
         ->fields(fn () => [
-            Schema\Integer::make('viewCount'),
+            Schema\Integer::make('viewCount')->get(fn (Discussion $d) => (int) ($d->view_count ?? 0)),
             Schema\Integer::make('viewCountRecent'),
         ])
         ->sorts(fn () => [
-            SortColumn::make('viewCount'),
             SortColumn::make('viewCountRecent'),
         ])
         ->endpoint('show', function (Endpoint\Show $endpoint) {
@@ -85,16 +94,11 @@ return [
                 $db = resolve(ConnectionInterface::class);
 
                 /*
-                 * 用 query builder 自增，避免并发下的丢更新；
-                 * 同时手动把内存里的值 +1，让本次响应返回的计数是自增后的值
-                 * （否则显示的数字会比实际少 1）。
-                 *
-                 * 两个列都必须落库：view_count 是全站累计，view_count_recent 是
-                 * 近 7 天。「热门浏览」按后者排序，只改内存会让排序永远不动。
+                 * 只维护本扩展自己的两个计数：view_count_recent 与按天明细。
+                 * view_count（全站累计）交给 fof/discussion-views 之类的扩展，
+                 * 这里碰都不碰，避免重复计数。
                  */
-                Discussion::query()->whereKey($id)->increment('view_count');
                 Discussion::query()->whereKey($id)->increment('view_count_recent');
-                $data->view_count = (int) $data->view_count + 1;
 
                 RecentViews::record($db, $id);
                 $data->view_count_recent = (int) $data->view_count_recent + 1;

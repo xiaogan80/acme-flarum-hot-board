@@ -109,10 +109,24 @@ php flarum xiaogan80-hot-board:recount   # 手动跑一次确认可用
 
 安装时执行两个迁移：
 
+只执行一个迁移：
+
 | 迁移 | 作用 |
 |---|---|
-| `add_view_count_to_discussions` | `discussions.view_count`（全站累计） |
 | `add_recent_view_tracking` | `discussions.view_count_recent`（近 7 天）+ `xiaogan80_hot_board_view_days` 明细表 |
+
+### 与 `fof/discussion-views` 共存
+
+`fof/discussion-views` 已经在 `discussions` 上加了 `view_count` 列并自己维护自增。
+
+**本扩展不创建、也不写入这一列**，只读取它：
+
+- 装了 `fof/discussion-views` → `viewCount` 字段返回它的数据
+- 没装 → `viewCount` 返回 `0`
+
+早期版本（v1.2.x）也去建 `view_count`，结果和 `fof/discussion-views` 撞列，
+抛 `Duplicate column name 'view_count'`，而 Flarum 只显示一个笼统的
+「数据库查询失败」页面。v1.3.0 起彻底不再碰它。
 
 每次讨论页被访问会写入 3 次：两个计数各 +1，以及当天明细 +1。
 
@@ -143,18 +157,21 @@ tail -n 50 storage/logs/flarum-*.log
 
 | 报错关键字 | 原因 | 处理 |
 |---|---|---|
-| `Duplicate column name 'view_count'` | 站上已有别的浏览量扩展占用了该列 | v1.2.2 起自动跳过，不再报错 |
+| `Duplicate column name 'view_count'` | 与 `fof/discussion-views` 撞列 | v1.3.0 起不再创建该列，不会再出现 |
 | `Unknown column 'view_count_recent'` | 扩展已启用但迁移没跑完 | `php flarum migrate -v` 重跑 |
 | `Base table or view already exists` | 上次迁移中途失败留下残表 | `DROP TABLE xiaogan80_hot_board_view_days;` 后重跑 |
 | `Specified key was too long` | 老版本 MySQL 的索引长度限制 | 已移除该索引，不会再出现 |
 
-**v1.2.2 的恢复步骤**：
+**v1.3.0 的恢复步骤**：
 
 ```bash
 composer update xiaogan80/flarum-hot-board
+php flarum extension:enable xiaogan80-hot-board
 php flarum migrate -v
 php flarum cache:clear
 ```
+
+> 如果 `migrate` 提示扩展没有迁移，通常说明扩展还没 `enable`。
 
 ## 卸载
 
