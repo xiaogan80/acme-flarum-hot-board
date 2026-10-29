@@ -23,7 +23,7 @@ const MAX_INTERVAL = 30;
 const MAX_SCAN = 50;
 
 function t(key) {
-  return app.translator.trans(`acme-hot-board.forum.${key}`);
+  return app.translator.trans(`yingweigan-hot-board.forum.${key}`);
 }
 
 /** 未设置时视为开启 */
@@ -43,11 +43,11 @@ function clampInt(value, fallback, min, max) {
 }
 
 function itemCount() {
-  return clampInt(app.forum.attribute('acme-hot-board.count'), DEFAULT_COUNT, MIN_COUNT, MAX_COUNT);
+  return clampInt(app.forum.attribute('yingweigan-hot-board.count'), DEFAULT_COUNT, MIN_COUNT, MAX_COUNT);
 }
 
 function slideInterval() {
-  return clampInt(app.forum.attribute('acme-hot-board.slideInterval'), DEFAULT_INTERVAL, MIN_INTERVAL, MAX_INTERVAL);
+  return clampInt(app.forum.attribute('yingweigan-hot-board.slideInterval'), DEFAULT_INTERVAL, MIN_INTERVAL, MAX_INTERVAL);
 }
 
 /*
@@ -68,9 +68,9 @@ function configSignature() {
   return [
     `n=${itemCount()}`,
     `i=${slideInterval()}`,
-    `r=${isOn('acme-hot-board.showRecommended')}${modeOf('acme-hot-board.recommendedMode')}`,
-    `l=${isOn('acme-hot-board.showLatest')}${modeOf('acme-hot-board.latestMode')}`,
-    `p=${isOn('acme-hot-board.showPopular')}${modeOf('acme-hot-board.popularMode')}`,
+    `r=${isOn('yingweigan-hot-board.showRecommended')}${modeOf('yingweigan-hot-board.recommendedMode')}`,
+    `l=${isOn('yingweigan-hot-board.showLatest')}${modeOf('yingweigan-hot-board.latestMode')}`,
+    `p=${isOn('yingweigan-hot-board.showPopular')}${modeOf('yingweigan-hot-board.popularMode')}`,
     // 手动推荐列表变了，缓存必须失效
     `f=${featuredIds().join('.')}`,
   ].join('|');
@@ -78,7 +78,7 @@ function configSignature() {
 
 /** 后台手动指定的推荐讨论 ID（后端已清洗成数组） */
 function featuredIds() {
-  const raw = app.forum.attribute('acme-hot-board.featuredIds');
+  const raw = app.forum.attribute('yingweigan-hot-board.featuredIds');
 
   if (Array.isArray(raw)) return raw.map((n) => parseInt(n, 10)).filter((n) => n > 0);
   if (typeof raw === 'string') {
@@ -93,14 +93,14 @@ function featuredIds() {
 
 /** 站点是否允许访客自己关掉看板 */
 function allowDismiss() {
-  return app.forum.attribute('acme-hot-board.allowDismiss') !== false;
+  return app.forum.attribute('yingweigan-hot-board.allowDismiss') !== false;
 }
 
 /*
  * 「用户可关闭」是本机偏好，存在 localStorage 里 ——
  * 和 Flarum 自己的欢迎横幅一样，属于这台设备的个人选择，不进数据库。
  */
-const DISMISS_KEY = 'acme-hot-board.dismissed';
+const DISMISS_KEY = 'yingweigan-hot-board.dismissed';
 
 function isDismissed() {
   try {
@@ -177,20 +177,20 @@ export default class HotBoard extends Component {
       {
         key: 'recommended',
         icon: 'fas fa-star',
-        show: isOn('acme-hot-board.showRecommended'),
-        mode: modeOf('acme-hot-board.recommendedMode'),
+        show: isOn('yingweigan-hot-board.showRecommended'),
+        mode: modeOf('yingweigan-hot-board.recommendedMode'),
       },
       {
         key: 'latest',
         icon: 'fas fa-clock',
-        show: isOn('acme-hot-board.showLatest'),
-        mode: modeOf('acme-hot-board.latestMode'),
+        show: isOn('yingweigan-hot-board.showLatest'),
+        mode: modeOf('yingweigan-hot-board.latestMode'),
       },
       {
         key: 'popular',
         icon: 'fas fa-fire',
-        show: isOn('acme-hot-board.showPopular'),
-        mode: modeOf('acme-hot-board.popularMode'),
+        show: isOn('yingweigan-hot-board.showPopular'),
+        mode: modeOf('yingweigan-hot-board.popularMode'),
       },
     ]
       .filter((p) => p.show)
@@ -258,7 +258,7 @@ export default class HotBoard extends Component {
             result[key] = models || [];
           })
           .catch((e) => {
-            console.warn(`[acme-hot-board] failed to load "${key}":`, e);
+            console.warn(`[yingweigan-hot-board] failed to load "${key}":`, e);
             result[key] = [];
           })
       )

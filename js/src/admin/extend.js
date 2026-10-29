@@ -2,7 +2,7 @@ import Extend from 'flarum/common/extenders';
 import app from 'flarum/admin/app';
 
 function t(key) {
-  return app.translator.trans(`acme-hot-board.admin.${key}`, {}, true);
+  return app.translator.trans(`yingweigan-hot-board.admin.${key}`, {}, true);
 }
 
 /** 区块展示方式：列表 / 图片帖子 */
@@ -18,7 +18,7 @@ export default [
     // ---------- 推荐帖子 ----------
     .setting(
       () => ({
-        setting: 'acme-hot-board.showRecommended',
+        setting: 'yingweigan-hot-board.showRecommended',
         label: t('show_recommended_label'),
         help: t('show_recommended_help'),
         type: 'boolean',
@@ -27,7 +27,7 @@ export default [
     )
     .setting(
       () => ({
-        setting: 'acme-hot-board.recommendedMode',
+        setting: 'yingweigan-hot-board.recommendedMode',
         label: t('mode_recommended_label'),
         help: t('mode_help'),
         type: 'select',
@@ -40,7 +40,7 @@ export default [
     // ---------- 最新帖子 ----------
     .setting(
       () => ({
-        setting: 'acme-hot-board.showLatest',
+        setting: 'yingweigan-hot-board.showLatest',
         label: t('show_latest_label'),
         help: t('show_latest_help'),
         type: 'boolean',
@@ -49,7 +49,7 @@ export default [
     )
     .setting(
       () => ({
-        setting: 'acme-hot-board.latestMode',
+        setting: 'yingweigan-hot-board.latestMode',
         label: t('mode_latest_label'),
         help: t('mode_help'),
         type: 'select',
@@ -62,7 +62,7 @@ export default [
     // ---------- 热门浏览 ----------
     .setting(
       () => ({
-        setting: 'acme-hot-board.showPopular',
+        setting: 'yingweigan-hot-board.showPopular',
         label: t('show_popular_label'),
         help: t('show_popular_help'),
         type: 'boolean',
@@ -71,7 +71,7 @@ export default [
     )
     .setting(
       () => ({
-        setting: 'acme-hot-board.popularMode',
+        setting: 'yingweigan-hot-board.popularMode',
         label: t('mode_popular_label'),
         help: t('mode_help'),
         type: 'select',
@@ -84,7 +84,7 @@ export default [
     // ---------- 推荐列表来源 ----------
     .setting(
       () => ({
-        setting: 'acme-hot-board.featuredIds',
+        setting: 'yingweigan-hot-board.featuredIds',
         label: t('featured_label'),
         help: t('featured_help'),
         type: 'text',
@@ -96,7 +96,7 @@ export default [
     // ---------- 通用 ----------
     .setting(
       () => ({
-        setting: 'acme-hot-board.count',
+        setting: 'yingweigan-hot-board.count',
         label: t('count_label'),
         help: t('count_help'),
         type: 'number',
@@ -107,7 +107,7 @@ export default [
     )
     .setting(
       () => ({
-        setting: 'acme-hot-board.allowDismiss',
+        setting: 'yingweigan-hot-board.allowDismiss',
         label: t('allow_dismiss_label'),
         help: t('allow_dismiss_help'),
         type: 'boolean',
@@ -116,7 +116,7 @@ export default [
     )
     .setting(
       () => ({
-        setting: 'acme-hot-board.slideInterval',
+        setting: 'yingweigan-hot-board.slideInterval',
         label: t('slide_interval_label'),
         help: t('slide_interval_help'),
         type: 'number',

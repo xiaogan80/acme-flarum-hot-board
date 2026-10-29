@@ -24,8 +24,8 @@ return [
             });
         }
 
-        if (! $schema->hasTable('acme_hot_board_view_days')) {
-            $schema->create('acme_hot_board_view_days', function (Blueprint $table) {
+        if (! $schema->hasTable('yingweigan_hot_board_view_days')) {
+            $schema->create('yingweigan_hot_board_view_days', function (Blueprint $table) {
                 $table->unsignedInteger('discussion_id');
                 $table->date('day');
                 $table->unsignedInteger('views')->default(0);
@@ -37,8 +37,8 @@ return [
     },
 
     'down' => function (Builder $schema) {
-        if ($schema->hasTable('acme_hot_board_view_days')) {
-            $schema->drop('acme_hot_board_view_days');
+        if ($schema->hasTable('yingweigan_hot_board_view_days')) {
+            $schema->drop('yingweigan_hot_board_view_days');
         }
 
         if ($schema->hasColumn('discussions', 'view_count_recent')) {

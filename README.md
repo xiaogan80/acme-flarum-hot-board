@@ -37,19 +37,19 @@
 在你的 Flarum 根目录，先告诉 Composer 去哪里找（本包未发布到 Packagist）：
 
 ```bash
-composer config repositories.acme-hot-board vcs https://github.com/yingweigan/acme-flarum-hot-board.git
+composer config repositories.yingweigan-hot-board vcs https://github.com/yingweigan/acme-flarum-hot-board.git
 ```
 
 然后安装：
 
 ```bash
-composer require acme/flarum-hot-board
+composer require yingweigan/flarum-hot-board
 ```
 
 启用：
 
 ```bash
-php flarum extension:enable acme-hot-board
+php flarum extension:enable yingweigan-hot-board
 php flarum migrate
 php flarum cache:clear
 ```
@@ -66,15 +66,15 @@ php flarum cache:clear
 
 ### 方式二：手动放入
 
-下载仓库，把目录放到 `packages/acme-hot-board/`，然后在 `composer.json` 加：
+下载仓库，把目录放到 `packages/yingweigan-hot-board/`，然后在 `composer.json` 加：
 
 ```json
 "repositories": [{ "type": "path", "url": "packages/*" }]
 ```
 
 ```bash
-composer require acme/flarum-hot-board:@dev
-php flarum extension:enable acme-hot-board
+composer require yingweigan/flarum-hot-board:@dev
+php flarum extension:enable yingweigan-hot-board
 php flarum migrate
 php flarum cache:clear
 ```
@@ -84,7 +84,7 @@ php flarum cache:clear
 扩展注册了一个每天 03:10 执行的重算命令：
 
 ```bash
-php flarum acme-hot-board:recount
+php flarum yingweigan-hot-board:recount
 ```
 
 **没有 cron 触发，「近 7 天」会退化成「自安装以来」**——计数只增不减，窗口不会滚动。
@@ -96,13 +96,13 @@ php flarum acme-hot-board:recount
 验证：
 
 ```bash
-php flarum schedule:list        # 应看到 10 3 * * * acme-hot-board:recount
-php flarum acme-hot-board:recount   # 手动跑一次确认可用
+php flarum schedule:list        # 应看到 10 3 * * * yingweigan-hot-board:recount
+php flarum yingweigan-hot-board:recount   # 手动跑一次确认可用
 ```
 
 ## 后台设置
 
-`/admin#/extension/acme-hot-board`
+`/admin#/extension/yingweigan-hot-board`
 
 | 设置 | 说明 | 默认 |
 |---|---|---|
@@ -131,10 +131,10 @@ php flarum acme-hot-board:recount   # 手动跑一次确认可用
 ## 卸载
 
 ```bash
-php flarum extension:disable acme-hot-board   # 只隐藏，保留数据
+php flarum extension:disable yingweigan-hot-board   # 只隐藏，保留数据
 # 彻底移除
-composer remove acme/flarum-hot-board
-php flarum migrate:reset acme-hot-board
+composer remove yingweigan/flarum-hot-board
+php flarum migrate:reset yingweigan-hot-board
 ```
 
 ## 开发

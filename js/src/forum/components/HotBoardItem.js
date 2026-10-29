@@ -75,7 +75,7 @@ export default class HotBoardItem extends Component {
 
     if (!user) return ago;
 
-    return app.translator.trans('acme-hot-board.forum.sub_author_time', { user, ago });
+    return app.translator.trans('yingweigan-hot-board.forum.sub_author_time', { user, ago });
   }
 
   /** 首帖 HTML 里的第一张图 */

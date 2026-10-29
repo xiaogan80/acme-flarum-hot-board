@@ -1,5 +1,5 @@
 {
-    "name": "acme/flarum-hot-board",
+    "name": "yingweigan/flarum-hot-board",
     "description": "在讨论列表上方显示「推荐帖子 / 最新帖子 / 热门浏览」三列看板，每条自动填充帖子首图或用户头像。",
     "type": "flarum-extension",
     "keywords": ["flarum", "widget", "board", "hot"],
@@ -9,7 +9,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Acme\\HotBoard\\": "src/"
+            "Yingweigan\\HotBoard\\": "src/"
         }
     },
     "extra": {

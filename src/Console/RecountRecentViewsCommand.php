@@ -1,8 +1,8 @@
 <?php
 
-namespace Acme\HotBoard\Console;
+namespace Yingweigan\HotBoard\Console;
 
-use Acme\HotBoard\RecentViews;
+use Yingweigan\HotBoard\RecentViews;
 use Flarum\Console\AbstractCommand;
 use Illuminate\Database\ConnectionInterface;
 
@@ -21,7 +21,7 @@ class RecountRecentViewsCommand extends AbstractCommand
     protected function configure(): void
     {
         $this
-            ->setName('acme-hot-board:recount')
+            ->setName('yingweigan-hot-board:recount')
             ->setDescription('重算热点看板「热门浏览」使用的近 7 天浏览量');
     }
 

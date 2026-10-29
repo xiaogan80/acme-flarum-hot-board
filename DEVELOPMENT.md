@@ -80,16 +80,16 @@ Flarum 核心**不统计浏览量**（`flarum/statistics` 只是实时聚合，�
 
 | 界面字段 | 设置 key | 类型 | 默认 |
 |---|---|---|---|
-| 显示「推荐帖子」区块 | `acme-hot-board.showRecommended` | 开关 | `true` |
-| 显示「最新帖子」区块 | `acme-hot-board.showLatest` | 开关 | `true` |
-| 显示「热门浏览」区块 | `acme-hot-board.showPopular` | 开关 | `true` |
-| 「推荐帖子」展示方式 | `acme-hot-board.recommendedMode` | 下拉：列表 / 图片帖子 | `list` |
-| 「最新帖子」展示方式 | `acme-hot-board.latestMode` | 下拉：列表 / 图片帖子 | `list` |
-| 「热门浏览」展示方式 | `acme-hot-board.popularMode` | 下拉：列表 / 图片帖子 | `list` |
-| 每列显示数量 | `acme-hot-board.count` | 数字 1–10 | `5` |
-| 图片自动切换间隔（秒） | `acme-hot-board.slideInterval` | 数字 2–30 | `5` |
+| 显示「推荐帖子」区块 | `yingweigan-hot-board.showRecommended` | 开关 | `true` |
+| 显示「最新帖子」区块 | `yingweigan-hot-board.showLatest` | 开关 | `true` |
+| 显示「热门浏览」区块 | `yingweigan-hot-board.showPopular` | 开关 | `true` |
+| 「推荐帖子」展示方式 | `yingweigan-hot-board.recommendedMode` | 下拉：列表 / 图片帖子 | `list` |
+| 「最新帖子」展示方式 | `yingweigan-hot-board.latestMode` | 下拉：列表 / 图片帖子 | `list` |
+| 「热门浏览」展示方式 | `yingweigan-hot-board.popularMode` | 下拉：列表 / 图片帖子 | `list` |
+| 每列显示数量 | `yingweigan-hot-board.count` | 数字 1–10 | `5` |
+| 图片自动切换间隔（秒） | `yingweigan-hot-board.slideInterval` | 数字 2–30 | `5` |
 
-前端读取：`app.forum.attribute('acme-hot-board.count')` 等。
+前端读取：`app.forum.attribute('yingweigan-hot-board.count')` 等。
 
 布局是 `grid-template-columns: repeat(auto-fit, minmax(268px, 1fr))`，所以关掉一列会自动收窄，不会留下空位。
 
@@ -142,7 +142,7 @@ Flarum 是 SPA，从帖子页返回首页时 `IndexPage` 会重新挂载，`HotB
 |---|---|
 | `acme_hot_board_view_days` 表 | 按 `(discussion_id, day)` 聚合每天的浏览量，一次访问只在当天行 +1 |
 | `discussions.view_count_recent` | 物化列，**「热门浏览」按它排序** |
-| `php flarum acme-hot-board:recount` | 每天 03:10 用「窗口内按天求和」覆盖物化列，并删除窗口外明细 |
+| `php flarum yingweigan-hot-board:recount` | 每天 03:10 用「窗口内按天求和」覆盖物化列，并删除窗口外明细 |
 
 必须物化一列的原因：Flarum 的 `SortColumn` 只能对 `discussions` 自己的列做 `orderBy`，
 没法按另一张表的聚合值排序。
@@ -155,7 +155,7 @@ Flarum 是 SPA，从帖子页返回首页时 `IndexPage` 会重新挂载，`HotB
 
 ## 访客可关闭（本机偏好）
 
-看板右上角有 `×`。点一下写入 `localStorage['acme-hot-board.dismissed'] = '1'`，立即隐藏。
+看板右上角有 `×`。点一下写入 `localStorage['yingweigan-hot-board.dismissed'] = '1'`，立即隐藏。
 
 - 这是**本机偏好**，不进数据库、不影响其他访客
 - 后台「允许访客关闭看板」关掉后，即使之前关过也会重新显示
@@ -239,20 +239,20 @@ Flarum 是 SPA，从帖子页返回首页时 `IndexPage` 会重新挂载，`HotB
 
 ```bash
 # 1. 放进 packages 目录
-cp -r acme-hot-board /path/to/flarum/packages/
+cp -r yingweigan-hot-board /path/to/flarum/packages/
 
 # 2. 让 Composer 认这个目录（只需一次）
 cd /path/to/flarum
 composer config repositories.0 path "packages/*"
 
 # 3. 编译前端
-cd packages/acme-hot-board/js
+cd packages/yingweigan-hot-board/js
 npm install && npm run build
 
 # 4. 安装 + 启用（启用时会自动跑迁移）
 cd /path/to/flarum
-composer require acme/flarum-hot-board "*@dev"
-php flarum extension:enable acme-hot-board
+composer require yingweigan/flarum-hot-board "*@dev"
+php flarum extension:enable yingweigan-hot-board
 php flarum cache:clear
 ```
 
@@ -264,7 +264,7 @@ php flarum cache:clear
 ## 文件结构
 
 ```
-acme-hot-board/
+yingweigan-hot-board/
 ├── composer.json                        # 元信息（category: forum-widget）
 ├── extend.php                           # 资源注册 + 设置 + Discussion 资源扩展
 ├── migrations/

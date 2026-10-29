@@ -9,7 +9,7 @@ import HotBoard from './components/HotBoard';
  */
 export { default as extend } from './extend';
 
-app.initializers.add('acme-hot-board', () => {
+app.initializers.add('yingweigan-hot-board', () => {
   /*
    * 注入点：PageStructure.mainItems()
    *

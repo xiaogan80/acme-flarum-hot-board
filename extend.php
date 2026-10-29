@@ -1,7 +1,7 @@
 <?php
 
-use Acme\HotBoard\Console\RecountRecentViewsCommand;
-use Acme\HotBoard\RecentViews;
+use Yingweigan\HotBoard\Console\RecountRecentViewsCommand;
+use Yingweigan\HotBoard\RecentViews;
 use Flarum\Api\Context;
 use Flarum\Api\Endpoint;
 use Flarum\Api\Resource;
@@ -27,34 +27,34 @@ return [
      * 变换函数显式处理 null，避免 default() 与 serializeToForum() 时序不同导致的误判。
      */
     (new Extend\Settings())
-        ->default('acme-hot-board.showRecommended', true)
-        ->default('acme-hot-board.showLatest', true)
-        ->default('acme-hot-board.showPopular', true)
-        ->default('acme-hot-board.count', 5)
-        ->default('acme-hot-board.recommendedMode', 'list')
-        ->default('acme-hot-board.latestMode', 'list')
-        ->default('acme-hot-board.popularMode', 'list')
-        ->default('acme-hot-board.slideInterval', 5)
-        ->default('acme-hot-board.allowDismiss', true)
-        ->default('acme-hot-board.featuredIds', '')
+        ->default('yingweigan-hot-board.showRecommended', true)
+        ->default('yingweigan-hot-board.showLatest', true)
+        ->default('yingweigan-hot-board.showPopular', true)
+        ->default('yingweigan-hot-board.count', 5)
+        ->default('yingweigan-hot-board.recommendedMode', 'list')
+        ->default('yingweigan-hot-board.latestMode', 'list')
+        ->default('yingweigan-hot-board.popularMode', 'list')
+        ->default('yingweigan-hot-board.slideInterval', 5)
+        ->default('yingweigan-hot-board.allowDismiss', true)
+        ->default('yingweigan-hot-board.featuredIds', '')
 
-        ->serializeToForum('acme-hot-board.showRecommended', 'acme-hot-board.showRecommended', fn ($v) => $v === null ? true : (bool) $v)
-        ->serializeToForum('acme-hot-board.showLatest', 'acme-hot-board.showLatest', fn ($v) => $v === null ? true : (bool) $v)
-        ->serializeToForum('acme-hot-board.showPopular', 'acme-hot-board.showPopular', fn ($v) => $v === null ? true : (bool) $v)
-        ->serializeToForum('acme-hot-board.count', 'acme-hot-board.count', function ($v) {
+        ->serializeToForum('yingweigan-hot-board.showRecommended', 'yingweigan-hot-board.showRecommended', fn ($v) => $v === null ? true : (bool) $v)
+        ->serializeToForum('yingweigan-hot-board.showLatest', 'yingweigan-hot-board.showLatest', fn ($v) => $v === null ? true : (bool) $v)
+        ->serializeToForum('yingweigan-hot-board.showPopular', 'yingweigan-hot-board.showPopular', fn ($v) => $v === null ? true : (bool) $v)
+        ->serializeToForum('yingweigan-hot-board.count', 'yingweigan-hot-board.count', function ($v) {
             $n = (int) $v;
             return $n >= 5 && $n <= 10 ? $n : 5;
         })
-        ->serializeToForum('acme-hot-board.recommendedMode', 'acme-hot-board.recommendedMode', fn ($v) => in_array($v, ['list', 'image'], true) ? $v : 'list')
-        ->serializeToForum('acme-hot-board.latestMode', 'acme-hot-board.latestMode', fn ($v) => in_array($v, ['list', 'image'], true) ? $v : 'list')
-        ->serializeToForum('acme-hot-board.popularMode', 'acme-hot-board.popularMode', fn ($v) => in_array($v, ['list', 'image'], true) ? $v : 'list')
-        ->serializeToForum('acme-hot-board.slideInterval', 'acme-hot-board.slideInterval', function ($v) {
+        ->serializeToForum('yingweigan-hot-board.recommendedMode', 'yingweigan-hot-board.recommendedMode', fn ($v) => in_array($v, ['list', 'image'], true) ? $v : 'list')
+        ->serializeToForum('yingweigan-hot-board.latestMode', 'yingweigan-hot-board.latestMode', fn ($v) => in_array($v, ['list', 'image'], true) ? $v : 'list')
+        ->serializeToForum('yingweigan-hot-board.popularMode', 'yingweigan-hot-board.popularMode', fn ($v) => in_array($v, ['list', 'image'], true) ? $v : 'list')
+        ->serializeToForum('yingweigan-hot-board.slideInterval', 'yingweigan-hot-board.slideInterval', function ($v) {
             $n = (int) $v;
             return $n >= 2 && $n <= 30 ? $n : 5;
         })
-        ->serializeToForum('acme-hot-board.allowDismiss', 'acme-hot-board.allowDismiss', fn ($v) => $v === null ? true : (bool) $v)
+        ->serializeToForum('yingweigan-hot-board.allowDismiss', 'yingweigan-hot-board.allowDismiss', fn ($v) => $v === null ? true : (bool) $v)
         // 下发清洗后的 ID 数组，前端不用再解析字符串
-        ->serializeToForum('acme-hot-board.featuredIds', 'acme-hot-board.featuredIds', function ($v) {
+        ->serializeToForum('yingweigan-hot-board.featuredIds', 'yingweigan-hot-board.featuredIds', function ($v) {
             $ids = array_filter(array_map('intval', explode(',', (string) $v)), fn ($n) => $n > 0);
 
             return array_slice(array_values(array_unique($ids)), 0, 20);
